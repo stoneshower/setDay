@@ -6,32 +6,38 @@
 	/**
      * return true only on wednesday
     **/
-	var SetActiveWednesday = function() {
+	var SetActiveDay = function($config) {
+        this.$config = $config || $('');
+        this.setDay = this.$config.attr('data-day') || this.defaults.day;
 		this.$el = undefined;
 		this.getElements();
 		this.setEvents();
 		this.$window = $(window);
     };
 
-    SetActiveWednesday.prototype = {
+    SetActiveDay.prototype = {
+        defaults: {
+            day: 0
+        },
     	getElements: function(){
-    		this.$el = $('#el');
+    		this.$el = $('#js-cmFukubukuroContainer').find('.c-cmContentFb__single');
+            this.$elOuter = $('#js-cmFukubukuroContainer').find('.c-cmContentFb');
     	},
     	setEvents: function(){
     		$(window).on('load', this.toggle.bind(this));
     	},
     	toggle: function(){
-    		if(this.setWednesday()){
+    		if(this.setSpDay()){
     			this.$el.addClass('active');
+                this.$elOuter.addClass('active-outer');
     		}
     	},
-    	setWednesday: function(){
+    	setSpDay: function(){
 			var d = this.convertToServerTimeZone()
 			var day = d.getDay();
 			var hours = d.getHours();
-
-            //wednesday
-			return day == 3 && hours >= 0 || day == 4 && hours < 1;
+            //Set Day
+			return day == this.setDay && hours >= 0 || day == this.setDay + 1 && hours < 1;
     	},
         convertToServerTimeZone(){
             var offset = +9.0; // JST +09:00
@@ -41,9 +47,9 @@
             return serverDate;
         }
     };
-
     $(function(){
-   	    var setActiveWednesday = new SetActiveWednesday();
+        var $config = $('#r-setDayConfig');
+   	    var setActiveDay = new SetActiveDay($config);
     });
 
 })(jQuery);
